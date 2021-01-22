@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default () => {
 
@@ -9,9 +10,16 @@ export default () => {
 
     React.useEffect(() => {
         const checkToken = async () => {
-            navigation.reset({
-                routes:[{name: 'MainTab'}]
-            })
+            const token = await AsyncStorage.getItem('token');
+            if (token !== null) {
+                // TODO: PEGAR UM NOVO TOKEN
+                // ALTERAR ELE NO ASYNCSTORAGE
+                navigation.reset({
+                    routes: [{ name: 'MainTab' }]
+                });
+            } else {
+                navigation.navigate('SignIn');
+            }
         }
 
         checkToken();
@@ -19,7 +27,7 @@ export default () => {
 
     return (
         <SafeAreaView style={styles.safeAreaView}>
-            <ActivityIndicator color="#FFF" size="large" />
+            <ActivityIndicator color="#3375bc" size="large" />
         </SafeAreaView>
     );
 }
@@ -27,7 +35,7 @@ export default () => {
 const styles = StyleSheet.create({
     safeAreaView: {
         flex: 1,
-        backgroundColor: '#63c2d1',
+        backgroundColor: '#1c1c1e',
         justifyContent: 'center',
         alignItems: 'center'
     }
