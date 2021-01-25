@@ -1,15 +1,18 @@
 import React from 'react';
 
+import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
 import { styles } from './styles';
 import { Text, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Controller, useForm } from 'react-hook-form';
 
-import { signIn } from '../../services/API/ApiAuthentication';
+import { signInAsync } from '../../services/API/ApiAuthentication';
 import LoginRequest from '../../models/requests/LoginRequest';
-import { useNavigation } from '@react-navigation/native';
+
+import {setToken} from '../../services/AuthService';
 
 
 export default () => {
@@ -17,12 +20,12 @@ export default () => {
     const { control, handleSubmit, errors } = useForm();
 
     const onSubmit = async (data: LoginRequest) => {
-        const response = await signIn(data);
-        console.log(response);
-        if(response === null){
+        const response = await signInAsync(data);
+        if(!response.succeeded){
             alert('Email e/ou senha incorretos');
         }else{
-            await AsyncStorage.setItem('token', response.accessToken);
+            await setToken(response.data);
+            
             navigation.reset({
                 routes: [{ name: 'MainTab' }]
             });
